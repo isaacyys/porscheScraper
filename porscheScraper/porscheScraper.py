@@ -1,19 +1,43 @@
-# Python program to find the factorial of a number provided by the user.
+# scraping program that obtains addresses of Porsche locations in China
+# can be modified to scrape other websites
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-# change the value for a different result
-num = 7
+driver = webdriver.Chrome()
+driver.get("https://www.porsche.com/china/en/dealersearch/")
+driver.implicitly_wait(2)
 
-# To take input from the user
-#num = int(input("Enter a number: "))
+cities = ["Hong Kong", "Wuhan", "Beijing", "Nanjing", "Shanghai"]
+results = []
 
-factorial = 1
+wait = WebDriverWait(driver, 20)
 
-# check if the number is negative, positive or zero
-if num < 0:
-    print("Sorry, factorial does not exist for negative numbers")
-elif num == 0:
-    print("The factorial of 0 is 1")
-else:
-    for i in range(1,num + 1):
-        factorial = factorial*i
-    print("The factorial of",num,"is",factorial)
+for city in cities:
+    driver.refresh()
+    driver.implicitly_wait(20)
+    wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "gui-search-input")))
+    input_element = driver.find_element(By.CLASS_NAME, "gui-search-input")
+    input_element.click()
+    input_element.clear()
+    input_element.send_keys(city)
+    wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "gui-link-with-arrow")))
+    driver.find_element(By.CLASS_NAME, "gui-link-with-arrow").click()
+    #driver.execute_script("arguments[0].click();", element)
+    # driver.save_screenshot('debug_screenshot.png')
+
+    wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "slick-track")))
+    popup_html = driver.find_element(By.CLASS_NAME, "slick-track").get_attribute('innerHTML')
+    soup = BeautifulSoup(popup_html, "lxml")
+    dealer_info = soup.find_all("div", class_="m-113__dealerBox-dealerName")
+    for dealer in dealer_info:
+        results.append(dealer.get_text(strip=True))
+
+
+for result in results:
+    print(result)
+
