@@ -9,11 +9,11 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 driver = webdriver.Chrome()
-driver.get("https://www.porsche.com/china/zh/dealersearch/")
+driver.get("https://www.porsche.com/china/en/dealersearch/")
 driver.implicitly_wait(2)
 
 # I can modify this such that it parses a CSV containing the city names as well
-cities = ["insert cities here"]
+cities = ["Hong Kong", "Beijing", "Nanjing"]
 results = []
 results1 = []
 results2 = []
